@@ -1,4 +1,2 @@
-Feb 02, 2025 9:34:27 PM com.big.company.BigCompanyEmployeeDataBase getManagerOrCreateIfDoesNotExists
-WARNING: Out of order records. Manager created with Id:0
-Feb 02, 2025 9:34:27 PM com.big.company.BigCompanyController getInstance
-WARNING: Total employees loaded from CSV file:167
+Feb 02, 2025 10:53:35 PM com.big.company.BigCompanyController getInstance
+WARNING: Total employees loaded from CSV file:21

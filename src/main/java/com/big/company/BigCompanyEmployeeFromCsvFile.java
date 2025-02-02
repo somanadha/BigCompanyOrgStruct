@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author Somanadha Satyadev Bulusu
  */
-public class BigCompanyEmployeeDataBase {
+public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider {
     private final Map<Integer, BigCompanyEmployee> bigCompanyEmployeeMap = new HashMap<>();
 
     /**
@@ -29,7 +29,8 @@ public class BigCompanyEmployeeDataBase {
      *
      * @return Employee count that is loaded
      */
-    public int loadEmployeeDataFromCSV() {
+    @Override
+    public int loadEmployeeData() {
         final String CSV_FILE_PATH = "data.csv";
         int employeeCount = -1;
 
@@ -80,6 +81,7 @@ public class BigCompanyEmployeeDataBase {
      *
      * @return Collection of BigCompanyEmployee objects
      */
+    @Override
     public Collection<BigCompanyEmployee> getEmployees() {
         return bigCompanyEmployeeMap.values();
     }

@@ -1,40 +1,34 @@
 
-PROBLEM
-*****************
-BIG COMPANY is employing a lot of employees. 
+Manager IDEAL  salary >= 20% and <=50% of average of direct subordinates
+Hierarchy IDEAL depth is 4
 
-Company would like to analyze its organizational structure and identify potential improvements. 
+Queries to run:
+***************
+	1. Reporting structure depth violation
+	2. Earning violation
 
-Board wants to make sure that every manager earns at least 20% more than the average salary of its
-direct subordinates, but no more than 50% more than that average. 
+Design Options
+****************
+	1. Option 1: read and store all objects in a map
+		a. Pros:
+			i. Easy to implement and add objects
+		b. Cons:
+			i. Searching would take long time
+	2. Option 2: read an store all objects in a tree structures
+		a. Pros:
+			i. Mimics domain model
+			ii. Easy to get quires
+		b. cons
+			i. Bit hard to implement
+			ii. Add takes time
+			iii. Searching also is not going to be easy
 
-Company wants to avoid too long reporting lines, therefore we would like to identify all employees
-which have more than 4 managers between them and the CEO.
+So Option 1 is chosen
 
-You are given a CSV file which contains information about all the employees. File structure looks like this:
+Assumptions
+**************
+1. Data can present in any order
+2. There is only one CEO with NO manager ID
+3. There is no recursive hierarchy due to invalid manager fields
+4. BigCompany class is the starting point with "main"
 
-Id,firstName,lastName,salary,managerId
-======================================
-123,Joe,Doe,60000,
-124,Martin,Chekov,45000,123
-125,Bob,Ronstad,47000,123
-300,Alice,Hasacat,50000,124
-305,Brett,Hardleaf,34000,300
-
-Each line represents an employee (CEO included).
- 
-CEO has no manager specified. Number of rows can be up to 1000.
-
-Write a simple program which will read the file and report:
-- which managers earn less than they should, and by how much
-- which managers earn more than they should, and by how much
-- which employees have a reporting line which is too long, and by how much
-
-Key points:
-• use only Java SE (any version), and Junit (any version) for tests.
-• use maven for project structure and build
-• your application should read data from a file and print out output to console. No GUIs needed.
-• code will be assessed on correctness, simplicity, readability and cleanliness
-• If you have any doubts make a sensible assumption and document it
-
-When you're ready with your assignment please send us link to an online code repository (github, bitbucket, etc.) so we can review your code.

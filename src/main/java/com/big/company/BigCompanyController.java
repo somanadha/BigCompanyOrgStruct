@@ -1,7 +1,6 @@
 package com.big.company;
 
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -11,12 +10,16 @@ import java.util.stream.Collectors;
  */
 public final class BigCompanyController {
     private static BigCompanyController bigCompanyController = null;
-    private final BigCompanyEmployeeDataBase bigCompanyOrgData = new BigCompanyEmployeeDataBase();
+
+    private final BigCompanyEmployeeProvider provider;
 
     /**
      * Private Instance for Singleton
+     *
+     * @param provider Big Company Employee Provider
      */
-    private BigCompanyController() {
+    private BigCompanyController(BigCompanyEmployeeProvider provider) {
+        this.provider = provider;
     }
 
     /**
@@ -24,10 +27,10 @@ public final class BigCompanyController {
      *
      * @return Singleton Instance
      */
-    public static synchronized BigCompanyController getInstance() {
+    public static synchronized BigCompanyController getInstance(BigCompanyEmployeeProvider provider) {
         if (bigCompanyController == null) {
-            bigCompanyController = new BigCompanyController();
-            int employeeCount = bigCompanyController.bigCompanyOrgData.loadEmployeeDataFromCSV();
+            bigCompanyController = new BigCompanyController(provider);
+            int employeeCount = provider.loadEmployeeData();
             BigCompanyLogger.getLogger().warning("Total employees loaded from CSV file:"+employeeCount);
         }
         return bigCompanyController;
@@ -44,7 +47,7 @@ public final class BigCompanyController {
      */
     public Map<BigCompanyEmployee, Double> getUnderpaidManagers(double minimumPercentRequired) {
 
-        return bigCompanyOrgData.getEmployees().parallelStream()
+        return provider.getEmployees().parallelStream()
                 .filter(employee -> employee.isManager() &&
                         employee.getSalary() < ((100 + minimumPercentRequired) * employee.getSubordinatesAverageSalary())/100)
                 .collect(Collectors.toMap(
@@ -71,7 +74,7 @@ public final class BigCompanyController {
      * when compared with the average salary of all the subordinates along with the difference value
      */
     public Map<BigCompanyEmployee, Double> getOverpaidManagers(double maximumPercentAllowed) {
-        return bigCompanyOrgData.getEmployees().parallelStream()
+        return provider.getEmployees().parallelStream()
                 .filter(employee -> employee.isManager() &&
                         employee.getSalary() > ((100 + maximumPercentAllowed) * employee.getSubordinatesAverageSalary())/100)
                 .collect(Collectors.toMap(employee -> employee,
@@ -95,7 +98,7 @@ public final class BigCompanyController {
      * @return All employees who have more than <b>levelGapBetweenCeoAnEmployee</b> managers between them and CEO
      */
     public Map<BigCompanyEmployee, Integer> getTooDeepInHierarchyEmployees(int levelGapBetweenCeoAnEmployee) {
-        return bigCompanyOrgData.getEmployees().parallelStream()
+        return provider.getEmployees().parallelStream()
                 .filter(employee -> (employee.getEmployeeLevelInHierarchy() - levelGapBetweenCeoAnEmployee - 2  > 0 )) // Exclude CEO and the Employee from Employee level
                 .collect(Collectors.toMap(employee -> employee,
                         employee -> (employee.getEmployeeLevelInHierarchy() - levelGapBetweenCeoAnEmployee - 2))) // Exclude CEO and the Employee from Employee level

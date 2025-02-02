@@ -10,7 +10,8 @@ import java.util.Map;
 public class BigCompany {
 
     public static void main(String[] args) {
-        BigCompanyController controller = BigCompanyController.getInstance();
+        final BigCompanyEmployeeProvider provider = new BigCompanyEmployeeFromCsvFile();
+        BigCompanyController controller = BigCompanyController.getInstance(provider);
 
         System.out.println("Underpaid Employees");
         System.out.println("===================");
