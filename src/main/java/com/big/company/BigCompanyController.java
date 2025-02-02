@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public final class BigCompanyController {
     private static BigCompanyController bigCompanyController = null;
-    private final BigCompanyOrgData bigCompanyOrgData = new BigCompanyOrgData();
+    private final BigCompanyEmployeeDataBase bigCompanyOrgData = new BigCompanyEmployeeDataBase();
 
     private BigCompanyController() {
     }
@@ -20,23 +20,53 @@ public final class BigCompanyController {
 
     public Map<BigCompanyEmployee, Double> getUnderpaidManagers(double minimumPercentRequired) {
 
-        Collection<BigCompanyEmployeeImpl> employees = bigCompanyOrgData.getEmployees();
-        return employees.parallelStream()
+        return bigCompanyOrgData.getEmployees().parallelStream()
                 .filter(employee -> employee.isManager() &&
-                        employee.salary < minimumPercentRequired * employee.getSubordinatesAverageSalary())
+                        employee.getSalary() < ((100 + minimumPercentRequired) * employee.getSubordinatesAverageSalary())/100)
                 .collect(Collectors.toMap(
                         employee -> employee,
-                        employee -> (employee.getSubordinatesAverageSalary() - employee.salary)));
+                        employee -> ((((100 + minimumPercentRequired) * employee.getSubordinatesAverageSalary())/100) - employee.getSalary())))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(BigCompanyEmployee::getEmployeeId))) // Sorting by Employee ID
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1, // Merge function (not needed but required by toMap)
+                        LinkedHashMap::new // Preserve sorted order
+                ));
     }
 
     public Map<BigCompanyEmployee, Double> getOverpaidManagers(double maximumPercentAllowed) {
         return bigCompanyOrgData.getEmployees().parallelStream()
                 .filter(employee -> employee.isManager() &&
-                        employee.salary > maximumPercentAllowed * employee.getSubordinatesAverageSalary())
+                        employee.getSalary() > ((100 + maximumPercentAllowed) * employee.getSubordinatesAverageSalary())/100)
                 .collect(Collectors.toMap(employee -> employee,
-                        employee -> (employee.getSubordinatesAverageSalary() - employee.salary)));
+                        employee -> ((((100 + maximumPercentAllowed) * employee.getSubordinatesAverageSalary())/100) - employee.getSalary())))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(BigCompanyEmployee::getEmployeeId))) // Sorting by Employee ID
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1, // Merge function (not needed but required by toMap)
+                        LinkedHashMap::new // Preserve sorted order
+                ));
     }
 
-//    public Map<BigCompanyEmployee, Double> getTooDeepInHierarchyEmployees(int reasonableDepth) {
-//    }
+    public Map<BigCompanyEmployee, Integer> getTooDeepInHierarchyEmployees(int levelGapBetweenCeoAnEmployee) {
+        return bigCompanyOrgData.getEmployees().parallelStream()
+                .filter(employee -> (employee.getEmployeeLevelInHierarchy() - levelGapBetweenCeoAnEmployee - 2  > 0 )) // Exclude CEO and the Employee from Employee level
+                .collect(Collectors.toMap(employee -> employee,
+                        employee -> (employee.getEmployeeLevelInHierarchy() - levelGapBetweenCeoAnEmployee - 2))) // Exclude CEO and the Employee from Employee level
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(BigCompanyEmployee::getEmployeeId))) // Sorting by Employee ID
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1, // Merge function (not needed but required by toMap)
+                        LinkedHashMap::new // Preserve sorted order
+                ));
+    }
   }

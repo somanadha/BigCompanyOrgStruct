@@ -9,12 +9,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
-public class BigCompanyOrgData {
-    private final Map<Integer, BigCompanyEmployeeImpl> bigCompanyEmployeeMap = new HashMap<>();
+public class BigCompanyEmployeeDataBase {
+    private final Map<Integer, BigCompanyEmployee> bigCompanyEmployeeMap = new HashMap<>();
 
     public int loadEmployeeData() {
         final String CSV_FILE_PATH = "data.csv";
@@ -22,8 +21,8 @@ public class BigCompanyOrgData {
 
         try (Reader reader = new FileReader(CSV_FILE_PATH);
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)) {
-            BigCompanyEmployeeImpl employee;
-            BigCompanyEmployeeImpl manager;
+            BigCompanyEmployee employee;
+            BigCompanyEmployee manager;
             for (CSVRecord csvRecord : csvParser) {
                 // Ignore the 1st header row
                 if (employeeCount == -1) {
@@ -44,7 +43,7 @@ public class BigCompanyOrgData {
                 if (employee != null) {
                     employee.updateEmployee(employeeId,lastName, firstName, salary, manager);
                 } else {
-                    employee = new BigCompanyEmployeeImpl(employeeId,lastName, firstName, salary, manager);
+                    employee = new BigCompanyEmployee(employeeId,lastName, firstName, salary, manager);
                 }
                 manager.addSubordinate(employee);
                 bigCompanyEmployeeMap.put(employeeId, employee);
@@ -57,22 +56,22 @@ public class BigCompanyOrgData {
         return employeeCount;
     }
 
-    public Collection<BigCompanyEmployeeImpl> getEmployees() {
+    public Collection<BigCompanyEmployee> getEmployees() {
         return bigCompanyEmployeeMap.values();
     }
 
-    private BigCompanyEmployeeImpl getManagerOrCreateIfDoesNotExists(Integer managerId) {
-        BigCompanyEmployeeImpl manager = null;
+    private BigCompanyEmployee getManagerOrCreateIfDoesNotExists(Integer managerId) {
+        BigCompanyEmployee manager = null;
         if  (bigCompanyEmployeeMap.containsKey(managerId)) {
             manager = bigCompanyEmployeeMap.get(managerId);
         } else {
-           manager = new BigCompanyEmployeeImpl(managerId);
+           manager = new BigCompanyEmployee(managerId);
         }
         return manager;
     }
 
-    private BigCompanyEmployeeImpl getEmployeeIfAlreadyExists(Integer employeeId)  {
-        BigCompanyEmployeeImpl employee = null;
+    private BigCompanyEmployee getEmployeeIfAlreadyExists(Integer employeeId)  {
+        BigCompanyEmployee employee = null;
         if  (bigCompanyEmployeeMap.containsKey(employeeId)) {
             employee = bigCompanyEmployeeMap.get(employeeId);
         }
