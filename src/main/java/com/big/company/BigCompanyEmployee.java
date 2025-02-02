@@ -1,40 +1,32 @@
 package com.big.company;
 
-import lombok.Getter;
+public abstract  class BigCompanyEmployee {
+    protected Integer employeeId;
+    protected String lastName;
+    protected String firstName;
+    protected Double salary;
+    protected Integer managerId;
 
-import java.util.Vector;
+    protected abstract int getEmployeeLevelInHierarchy();
+    protected abstract void updateEmployee(Integer employeeId, String lastName, String firstName,
+                                          Double salary, BigCompanyEmployee manager);
+    protected abstract void addSubordinate(BigCompanyEmployee employee);
 
-@Getter
-public class BigCompanyEmployee {
-
-    private final BigCompanyOrgData bigCompanyOrgData;
-    private final Integer employeeId;
-    private final String lastName;
-    private final String firstName;
-    private final Double salary;
-    private final Integer managerId;
-    private final Vector<Integer> subordinateIds = new Vector<>();
-
-    public BigCompanyEmployee (BigCompanyOrgData bigCompanyOrgData, Integer employeeId,
-                               String lastName, String firstName,  Double salary, Integer managerId) {
-        this.bigCompanyOrgData = bigCompanyOrgData;
-        this.employeeId = employeeId;
-        this.lastName = lastName;
-        this.firstName= firstName;
-        this.salary = salary;
-        this.managerId = managerId;
+    public String toString() {
+        return "{" +
+                "employeeId: " + employeeId +
+                ", lastName: " + lastName +
+                ", firstName: " + firstName +
+                ", salary: " + salary +
+                ", managerId: " + managerId +
+                "}";
     }
 
-    public boolean isManager() {
-        return !subordinateIds.isEmpty();
-    }
-
-    public int getLevelInHierarchy () {
-        int levelInHierarchy = 1;
-        BigCompanyEmployee manager = bigCompanyOrgData.getEmployeeObject(managerId);
-        if (manager != null) {
-            levelInHierarchy += manager.getLevelInHierarchy();
-        }
-        return levelInHierarchy;
+    public String toShortString() {
+        return "{" +
+                "employeeId: " + employeeId +
+                ", salary: " + salary +
+                ", managerId: " + managerId +
+                "}";
     }
 }
