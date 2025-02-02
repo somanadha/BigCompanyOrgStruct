@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  *  This is the class that represents the employee database for the BIG COMPANY.
  *  Data for the employees is loaded from the CSV file which assumed to be available in the project root directory
@@ -45,29 +44,33 @@ public class BigCompanyEmployeeDataBase {
                     continue;
                 }
 
-                // Accessing Employee Data Values by Column Index
-                Integer employeeId = convertStringToInteger(csvRecord.get(0));
-                String lastName = csvRecord.get(1);
-                String firstName = csvRecord.get(2);
-                Double salary = convertStringToDouble(csvRecord.get(3));
-                Integer managerId = convertStringToInteger(csvRecord.get(4));
+                try {
+                    // Accessing Employee Data Values by Column Index
+                    Integer employeeId = convertStringToInteger(csvRecord.get(0));
+                    String lastName = csvRecord.get(1);
+                    String firstName = csvRecord.get(2);
+                    Double salary = convertStringToDouble(csvRecord.get(3));
+                    Integer managerId = convertStringToInteger(csvRecord.get(4));
 
-                manager = getEmployeeOrCreateIfDoesNotExists(managerId);
-                employee = getEmployeeIfAlreadyExists(employeeId);
-
-                if (employee != null) {
-                    // This happens in the case of this (manager) object is created earlier, just with employeeId
-                    employee.updateEmployee(employeeId,lastName, firstName, salary, manager);
-                } else {
-                    employee = new BigCompanyEmployee(employeeId,lastName, firstName, salary, manager);
+                    manager = getManagerOrCreateIfDoesNotExists(managerId);
+                    employee = getEmployeeIfAlreadyExists(employeeId);
+                    if (employee != null) {
+                        // This happens in the case of this (manager) object is created earlier, just with employeeId
+                        employee.updateEmployee(employeeId, lastName, firstName, salary, manager);
+                        BigCompanyLogger.getLogger().warning("Manager object updated for Id:"+employeeId);
+                    } else {
+                        employee = new BigCompanyEmployee(employeeId, lastName, firstName, salary, manager);
+                        BigCompanyLogger.getLogger().info("Employee created"+employee.toString());
+                    }
+                    manager.addSubordinate(employee);
+                    bigCompanyEmployeeMap.put(employeeId, employee);
+                    employeeCount++;
+                } catch (BigCompanyException | NumberFormatException bce) {
+                    BigCompanyLogger.getLogger().warning(bce.getMessage());
                 }
-                manager.addSubordinate(employee);
-                bigCompanyEmployeeMap.put(employeeId, employee);
-
-                employeeCount ++;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioe) {
+            BigCompanyLogger.getLogger().severe(ioe.getMessage());
         }
         return employeeCount;
     }
@@ -96,12 +99,14 @@ public class BigCompanyEmployeeDataBase {
      *
      * @return A complete employee object if available or an incomplete object with just employeeId would be returned.
      */
-    private BigCompanyEmployee getEmployeeOrCreateIfDoesNotExists(Integer employeeId) {
+    private BigCompanyEmployee getManagerOrCreateIfDoesNotExists(Integer employeeId) {
         BigCompanyEmployee employee = null;
         if  (bigCompanyEmployeeMap.containsKey(employeeId)) {
             employee = bigCompanyEmployeeMap.get(employeeId);
         } else {
             employee = new BigCompanyEmployee(employeeId);
+            bigCompanyEmployeeMap.put(employeeId, employee);
+            BigCompanyLogger.getLogger().warning("Out of order records. Manager created with Id:" + employeeId);
         }
         return employee;
     }
@@ -123,6 +128,14 @@ public class BigCompanyEmployeeDataBase {
         return employee;
     }
 
+    /**
+     * Converts String form of integer to Integer object
+     * @param str Integer number as a string
+     *
+     * @return String converted to integer
+     *
+     * @throws NumberFormatException
+     */
     private static Integer convertStringToInteger(String str) throws NumberFormatException{
         if (str == null || str.isEmpty()) {
             str = "0";
@@ -130,6 +143,14 @@ public class BigCompanyEmployeeDataBase {
         return Integer.parseInt(str);
     }
 
+    /**
+     * Converts String form of double to Double object
+     * @param str Double number as a string
+     *
+     * @return String converted to Double
+     *
+     * @throws NumberFormatException
+     */
     private static Double convertStringToDouble(String str) throws NumberFormatException{
         if (str == null || str.isEmpty()) {
             str = "0.0";

@@ -92,6 +92,7 @@ public final class BigCompanyEmployee {
      */
     public BigCompanyEmployee(Integer employeeId) {
         this.employeeId = employeeId;
+        this.salary = 0.0; // This is required as manager for CEO employeeId is 0 and Salary is O
         isCompletelyInitialized = false;
     }
 
@@ -105,7 +106,7 @@ public final class BigCompanyEmployee {
      * @param manager Manager object for the employee
      */
     public BigCompanyEmployee(Integer employeeId, String lastName, String firstName, Double salary,
-                              BigCompanyEmployee manager) {
+                              BigCompanyEmployee manager) throws BigCompanyException {
         updateEmployee(employeeId, lastName, firstName, salary, manager);
     }
 
@@ -163,7 +164,7 @@ public final class BigCompanyEmployee {
      * @param manager Manager object for the employee
      */
     public void updateEmployee(Integer employeeId, String lastName, String firstName, Double salary,
-                               BigCompanyEmployee manager) {
+                               BigCompanyEmployee manager) throws BigCompanyException{
         if (!isCompletelyInitialized) {
             this.employeeId = employeeId;
             this.lastName = lastName;
@@ -175,7 +176,8 @@ public final class BigCompanyEmployee {
             }
             isCompletelyInitialized = true;
         } else {
-            //throw new Exception("Duplicate Data");
+
+            throw new BigCompanyException("Duplicate Data. Employee already exists with id "+ employeeId);
         }
     }
 
@@ -185,15 +187,15 @@ public final class BigCompanyEmployee {
      *
      * @param employee Subordinate BigCompanyEmployee object to be added
      */
-    public void addSubordinate(BigCompanyEmployee employee) {
+    public void addSubordinate(BigCompanyEmployee employee) throws BigCompanyException{
         if (employee != null) {
             if (subordinateEmployees == null) {
                 subordinateEmployees = new Vector<>();
             }
             subordinateEmployees.add(employee);
             isSubordinateAverageSalaryRecalculationNeeded = true;
+            // TODO: Check for recursive management
         }
-        // Check for recursive data
     }
 
     /**

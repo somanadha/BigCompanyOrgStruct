@@ -1,6 +1,7 @@
 package com.big.company;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +27,8 @@ public final class BigCompanyController {
     public static synchronized BigCompanyController getInstance() {
         if (bigCompanyController == null) {
             bigCompanyController = new BigCompanyController();
-            bigCompanyController.bigCompanyOrgData.loadEmployeeDataFromCSV();
+            int employeeCount = bigCompanyController.bigCompanyOrgData.loadEmployeeDataFromCSV();
+            BigCompanyLogger.getLogger().warning("Total employees loaded from CSV file:"+employeeCount);
         }
         return bigCompanyController;
     }
