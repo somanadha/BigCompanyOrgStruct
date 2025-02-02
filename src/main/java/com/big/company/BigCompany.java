@@ -2,10 +2,16 @@ package com.big.company;
 
 import java.util.Map;
 
+/**
+ * This is the main class that acts as a client and get reports from BigCompanyController object and prints them
+ *
+ * @author Somanadha Satyadev Bulusu
+ */
 public class BigCompany {
 
     public static void main(String[] args) {
         BigCompanyController controller = BigCompanyController.getInstance();
+
         System.out.println("Underpaid Employees");
         System.out.println("===================");
         for (Map.Entry<BigCompanyEmployee, Double> entrySet : controller.getUnderpaidManagers(20).entrySet()) {
