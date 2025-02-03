@@ -9,26 +9,36 @@ Queries to run:
 
 Design Options
 ****************
+Data Structure for storage
+--------------------------
 	1. Option 1: read and store all objects in a map
 		a. Pros:
 			i. Easy to implement and add objects
 		b. Cons:
-			i. Searching would take long time
-	2. Option 2: read an store all objects in a tree structures
+			i. Up/Down the chain searching might take some time
+	2. Option 2: read and store all objects in a tree structures
 		a. Pros:
 			i. Mimics domain model
 			ii. Easy to get quires
 		b. cons
 			i. Bit hard to implement
 			ii. Add takes time
-			iii. Searching also is not going to be easy
+			iii. Up/Down the chain searching is also not easy
 
 So Option 1 is chosen
 
+Architecture
+--------------------------
+As there is a possibility of using a real database can be used for data storage decided on following thing
+1. There would a controller business class object that will have all the business methods
+2. Data provider source details interface would be passed to controller and controller would invoke methods
+3. Above design decision could allow testing to pass a Mocked Data Provider
+
 Assumptions
 **************
-1. Data can present in any order
-2. There is only one CEO with NO manager ID
-3. There is no recursive hierarchy due to invalid manager fields
-4. BigCompany class is the starting point with "main"
+1. Data file should present in the same directory of jar with name "data.csv"
+2. Data can present in any order
+3. There is only one CEO with NO manager ID
+4. There is no recursive hierarchy due to invalid manager fields
+5. BigCompany class is the starting point with "main" method
 

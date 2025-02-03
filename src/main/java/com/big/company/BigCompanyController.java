@@ -31,7 +31,7 @@ public final class BigCompanyController {
         if (bigCompanyController == null) {
             bigCompanyController = new BigCompanyController(provider);
             int employeeCount = provider.loadEmployeeData();
-            BigCompanyLogger.getLogger().warning("Total employees loaded from CSV file:"+employeeCount);
+            BigCompanyLogger.getLogger().warning("Total employees loaded:"+employeeCount);
         }
         return bigCompanyController;
     }
@@ -78,7 +78,7 @@ public final class BigCompanyController {
                 .filter(employee -> employee.isManager() &&
                         employee.getSalary() > ((100 + maximumPercentAllowed) * employee.getSubordinatesAverageSalary())/100)
                 .collect(Collectors.toMap(employee -> employee,
-                        employee -> ((((100 + maximumPercentAllowed) * employee.getSubordinatesAverageSalary())/100) - employee.getSalary())))
+                        employee -> (employee.getSalary() - (((100 + maximumPercentAllowed) * employee.getSubordinatesAverageSalary())/100))))
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.comparing(BigCompanyEmployee::getEmployeeId))) // Sorting by Employee ID
