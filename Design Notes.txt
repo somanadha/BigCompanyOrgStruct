@@ -29,16 +29,16 @@ So Option 1 is chosen
 
 Architecture
 --------------------------
-As there is a possibility of using a real database can be used for data storage decided on following thing
+As there is a possibility of using a real database decided on following thing
 1. There would a controller business class object that will have all the business methods
-2. Data provider source details interface would be passed to controller and controller would invoke methods
-3. Above design decision could allow testing to pass a Mocked Data Provider
+2. Data provider source details interface would be passed to controller and controller would invoke methods on it
+3. Above design decision could allow testing module to pass a Mocked Data Provider
 
 Assumptions
 **************
 1. Data file should present in the root directory with name "data.csv"
 2. Data can present in any order
-3. There is only one CEO with NO manager ID
-4. There is no recursive hierarchy due to invalid manager fields
+3. There is only one CEO with manager with ID 0
+4. There is no infinite loop hierarchy, due to invalid manager fields
 5. BigCompany class is the starting point with "main" method
 
