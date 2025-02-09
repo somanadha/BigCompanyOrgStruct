@@ -39,6 +39,5 @@ Assumptions
 1. Data file should present in the root directory with name "data.csv"
 2. Data can present in any order
 3. There is only one CEO with NO manager ID
-4. There is no recursive hierarchy due to invalid manager fields
-5. BigCompany class is the starting point with "main" method
+4. BigCompany class is the starting point with "main" method
 

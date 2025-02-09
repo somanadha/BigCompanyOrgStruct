@@ -1,5 +1,7 @@
 package com.big.company;
 
+import java.util.Objects;
+
 import lombok.Getter;
 
 import java.util.Vector;
@@ -26,7 +28,6 @@ public final class BigCompanyEmployee {
 
     /**
      * This field indicates whether an object of this class is created with all the above details from backend or not
-     *
      * There is scenario where an employee object is created first, but by that time manager object for that employee
      * may not present.
      * </p>
@@ -165,6 +166,8 @@ public final class BigCompanyEmployee {
      */
     public void updateEmployee(Integer employeeId, String lastName, String firstName, Double salary,
                                BigCompanyEmployee manager) throws BigCompanyException{
+ 
+        ValidateEmployeeForInfiniteManagerLoop(employeeId, manager);
         if (!isCompletelyInitialized) {
             this.employeeId = employeeId;
             this.lastName = lastName;
@@ -175,9 +178,24 @@ public final class BigCompanyEmployee {
                 this.managerId = manager.employeeId;
             }
             isCompletelyInitialized = true;
+            
         } else {
-
             throw new BigCompanyException("Duplicate Data. Employee already exists with id "+ employeeId);
+        }
+    }
+
+    private void ValidateEmployeeForInfiniteManagerLoop(Integer employeeId, 
+        BigCompanyEmployee manager) throws BigCompanyException {
+
+        while(manager != null && !Objects.equals(manager.employeeId, employeeId)){
+            manager = manager.manager;
+        }
+        
+        if (manager != null && Objects.equals(manager.employeeId, employeeId)) {
+            if (Objects.equals(employeeId, manager.employeeId)) {
+                throw new BigCompanyException("Employee with id "+ employeeId + 
+                    " has a manager infinite loop. Please fix that");
+            }
         }
     }
 
@@ -194,7 +212,6 @@ public final class BigCompanyEmployee {
             }
             subordinateEmployees.add(employee);
             isSubordinateAverageSalaryRecalculationNeeded = true;
-            // TODO: Check for recursive management
         }
     }
 

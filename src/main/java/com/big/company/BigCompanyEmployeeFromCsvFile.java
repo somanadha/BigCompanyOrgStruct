@@ -1,15 +1,16 @@
 package com.big.company;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 /**
  *  This is the class that represents the employee database for the BIG COMPANY.
@@ -56,18 +57,23 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
                     manager = getManagerOrCreateIfDoesNotExists(managerId);
                     employee = getEmployeeIfAlreadyExists(employeeId);
                     if (employee != null) {
-                        // This happens in the case of this (manager) object is created earlier, just with employeeId
+                        // This happens in the case of this (manager) object is created earlier, 
+                        // just with employeeId
                         employee.updateEmployee(employeeId, lastName, firstName, salary, manager);
-                        BigCompanyLogger.getLogger().warning("Manager object updated for Id:"+employeeId);
+                        BigCompanyLogger.getLogger().log(Level.WARNING, 
+                            "Manager object updated for Id:{0}", employeeId);
                     } else {
-                        employee = new BigCompanyEmployee(employeeId, lastName, firstName, salary, manager);
-                        BigCompanyLogger.getLogger().info("Employee created"+employee.toString());
+                        employee = new BigCompanyEmployee(employeeId, lastName, firstName, salary, 
+                            manager);
+
+                        BigCompanyLogger.getLogger().log(Level.INFO, 
+                            "Employee created{0}", employee.toString());
                     }
                     manager.addSubordinate(employee);
                     bigCompanyEmployeeMap.put(employeeId, employee);
                     employeeCount++;
                 } catch (BigCompanyException | NumberFormatException bce) {
-                    BigCompanyLogger.getLogger().warning(bce.getMessage());
+                    BigCompanyLogger.getLogger().log(Level.WARNING, bce.getMessage());
                 }
             }
         } catch (IOException ioe) {
@@ -102,13 +108,14 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
      * @return A complete employee object if available or an incomplete object with just employeeId would be returned.
      */
     private BigCompanyEmployee getManagerOrCreateIfDoesNotExists(Integer employeeId) {
-        BigCompanyEmployee employee = null;
+        BigCompanyEmployee employee;
         if  (bigCompanyEmployeeMap.containsKey(employeeId)) {
             employee = bigCompanyEmployeeMap.get(employeeId);
         } else {
             employee = new BigCompanyEmployee(employeeId);
             bigCompanyEmployeeMap.put(employeeId, employee);
-            BigCompanyLogger.getLogger().warning("Out of order records. Manager created with Id:" + employeeId);
+            BigCompanyLogger.getLogger().log(Level.WARNING, 
+                "Out of order records. Manager created with Id:{0}", employeeId);
         }
         return employee;
     }
@@ -136,13 +143,13 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
      *
      * @return String converted to integer
      *
-     * @throws NumberFormatException
+     * @throws NumberFormatException Exception when input doesn't contain an Integer
      */
     private static Integer convertStringToInteger(String str) throws NumberFormatException{
         if (str == null || str.isEmpty()) {
             str = "0";
         }
-        return Integer.parseInt(str);
+        return Integer.valueOf(str);
     }
 
     /**
@@ -151,12 +158,12 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
      *
      * @return String converted to Double
      *
-     * @throws NumberFormatException
+     * @throws NumberFormatException Exception when input doesn't contain a Double
      */
     private static Double convertStringToDouble(String str) throws NumberFormatException{
         if (str == null || str.isEmpty()) {
             str = "0.0";
         }
-        return Double.parseDouble(str);
+        return Double.valueOf(str);
     }
 }
