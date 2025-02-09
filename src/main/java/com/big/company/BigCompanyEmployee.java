@@ -57,7 +57,6 @@ public final class BigCompanyEmployee {
     private boolean isSubordinateAverageSalaryRecalculationNeeded;
     private double subordinatesAverageSalary;
 
-
     /**
      *   For an employee finding the reporting hierarchy level starting with CEO requires traversal up the chain.
      *   However once that traversal is done there is no need to do it repeatedly to get the reporting hierarchy level.
@@ -184,6 +183,13 @@ public final class BigCompanyEmployee {
         }
     }
 
+    /**
+     * Method that validates an employee ID to see if the manager chain up of that employee has the same employee ID
+     * of that employee due to erroneous configuration that could lead to infinite loop. If yes, throws an exception
+     * @param employeeId Employee ID to be checked
+     * @param manager Manager object of the Employee ID
+     * @throws BigCompanyException If manager chain up of that employee has the same employee ID
+     */
     private void ValidateEmployeeForInfiniteManagerLoop(Integer employeeId, 
         BigCompanyEmployee manager) throws BigCompanyException {
 
