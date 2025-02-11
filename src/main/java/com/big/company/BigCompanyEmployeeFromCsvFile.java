@@ -57,17 +57,12 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
                     manager = getManagerOrCreateIfDoesNotExists(managerId);
                     employee = getEmployeeIfAlreadyExists(employeeId);
                     if (employee != null) {
-                        // This happens in the case of this (manager) object is created earlier, 
-                        // just with employeeId
+                        // Control enters into this block in the case of this object was created just with employeeId
                         employee.updateEmployee(employeeId, lastName, firstName, salary, manager);
-                        BigCompanyLogger.getLogger().log(Level.WARNING, 
-                            "Manager object updated for Id:{0}", employeeId);
+                        BigCompanyLogger.getLogger().log(Level.WARNING,"Employee updated for Id:{0}", employeeId);
                     } else {
-                        employee = new BigCompanyEmployee(employeeId, lastName, firstName, salary, 
-                            manager);
-
-                        BigCompanyLogger.getLogger().log(Level.INFO, 
-                            "Employee created{0}", employee.toString());
+                        employee = new BigCompanyEmployee(employeeId, lastName, firstName, salary, manager);
+                        BigCompanyLogger.getLogger().log(Level.INFO, "Employee created{0}", employee.toString());
                     }
                     manager.addSubordinate(employee);
                     bigCompanyEmployeeMap.put(employeeId, employee);
@@ -93,29 +88,32 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
     }
 
     /**
-     * Each BigCompanyEmployee object contains employeeId.
-     * But complete details for that object may or may not be available when it is created
+     * Each BigCompanyEmployee object contains employeeId. But complete details for that object may or may not be
+     * available when it is created.
      * </p>
-     * So, this method checks if an employee object is available or not.
+     * This happens in the case when an employee object is being created with a managerId present, but there is no
+     * manager object that exists with that mangerId (employeeId).
+     * </p>
+     * So, this method checks if a manager  object is available or not.
      * </p>
      * if an object is already available then this method would return that.
-     * Else, this method would create one with just employeeId data.
+     * Else, this method would create one with just employeeId (managerId).
      * </p>
-     * Later when the actual employee data is available, this same object would be updated with more details
+     * Later when the complete data is available, this same object would be updated with more details
      *
-     * @param employeeId EmployeeId that needs to be checked for availability and if not to be created
+     * @param managerId Manager Id (EmployeeId) that needs to be checked for availability and if not to be created
      *
      * @return A complete employee object if available or an incomplete object with just employeeId would be returned.
      */
-    private BigCompanyEmployee getManagerOrCreateIfDoesNotExists(Integer employeeId) {
+    private BigCompanyEmployee getManagerOrCreateIfDoesNotExists(Integer managerId) {
         BigCompanyEmployee employee;
-        if  (bigCompanyEmployeeMap.containsKey(employeeId)) {
-            employee = bigCompanyEmployeeMap.get(employeeId);
+        if  (bigCompanyEmployeeMap.containsKey(managerId)) {
+            employee = bigCompanyEmployeeMap.get(managerId);
         } else {
-            employee = new BigCompanyEmployee(employeeId);
-            bigCompanyEmployeeMap.put(employeeId, employee);
-            BigCompanyLogger.getLogger().log(Level.WARNING, 
-                "Out of order records. Manager created with Id:{0}", employeeId);
+            employee = new BigCompanyEmployee(managerId);
+            bigCompanyEmployeeMap.put(managerId, employee);
+            BigCompanyLogger.getLogger().log(Level.WARNING,"Out of order records. Manager created with Id:{0}",
+                    managerId);
         }
         return employee;
     }
