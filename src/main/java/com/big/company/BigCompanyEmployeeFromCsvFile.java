@@ -33,7 +33,7 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
     @Override
     public int loadEmployeeData() {
         final String CSV_FILE_PATH = "data.csv";
-        int employeeCount = -1;
+        int lineReadCount = -1;
 
         try (Reader reader = new FileReader(CSV_FILE_PATH);
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)) {
@@ -41,8 +41,8 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
             BigCompanyEmployee manager;
             for (CSVRecord csvRecord : csvParser) {
                 // Ignore the 1st header row
-                if (employeeCount == -1) {
-                    employeeCount ++;
+                if (lineReadCount == -1) {
+                    lineReadCount ++;
                     continue;
                 }
 
@@ -66,15 +66,15 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
                     }
                     manager.addSubordinate(employee);
                     bigCompanyEmployeeMap.put(employeeId, employee);
-                    employeeCount++;
-                } catch (BigCompanyException | NumberFormatException bce) {
-                    BigCompanyLogger.getLogger().log(Level.WARNING, bce.getMessage());
+                    lineReadCount++;
+                } catch (BigCompanyException | ArrayIndexOutOfBoundsException | NumberFormatException bce) {
+                    BigCompanyLogger.getLogger().log(Level.WARNING, bce.getMessage()+": Line #"+lineReadCount);
                 }
             }
         } catch (IOException ioe) {
-            BigCompanyLogger.getLogger().severe(ioe.getMessage());
+            BigCompanyLogger.getLogger().log(Level.SEVERE, ioe.getMessage());
         }
-        return employeeCount;
+        return lineReadCount;
     }
 
     /**
