@@ -57,10 +57,12 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
                     manager = getManagerOrCreateIfDoesNotExists(managerId);
                     employee = getEmployeeIfAlreadyExists(employeeId);
                     if (employee != null) {
-                        // Control enters into this block in the case of this object was created just with employeeId
+                        // Control enters into this block if employee was created earlier just with employeeId as part
+                        // of assigning this employee as a manager to some other employee:
                         employee.updateEmployee(employeeId, lastName, firstName, salary, manager);
                         BigCompanyLogger.getLogger().log(Level.WARNING,"Employee updated for Id:{0}", employeeId);
                     } else {
+                        // Control enters into this block if employee is being created first time with all details:
                         employee = new BigCompanyEmployee(employeeId, lastName, firstName, salary, manager);
                         BigCompanyLogger.getLogger().log(Level.INFO, "Employee created{0}", employee.toString());
                     }
@@ -106,16 +108,16 @@ public class BigCompanyEmployeeFromCsvFile implements BigCompanyEmployeeProvider
      * @return A complete employee object if available or an incomplete object with just employeeId would be returned.
      */
     private BigCompanyEmployee getManagerOrCreateIfDoesNotExists(Integer managerId) {
-        BigCompanyEmployee employee;
+        BigCompanyEmployee manager;
         if  (bigCompanyEmployeeMap.containsKey(managerId)) {
-            employee = bigCompanyEmployeeMap.get(managerId);
+            manager = bigCompanyEmployeeMap.get(managerId);
         } else {
-            employee = new BigCompanyEmployee(managerId);
-            bigCompanyEmployeeMap.put(managerId, employee);
+            manager = new BigCompanyEmployee(managerId);
+            bigCompanyEmployeeMap.put(managerId, manager);
             BigCompanyLogger.getLogger().log(Level.WARNING,"Out of order records. Manager created with Id:{0}",
                     managerId);
         }
-        return employee;
+        return manager;
     }
 
     /**
