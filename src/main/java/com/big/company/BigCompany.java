@@ -32,6 +32,6 @@ public class BigCompany {
         for (Map.Entry<BigCompanyEmployee, Integer> entrySet : controller.getTooDeepInHierarchyEmployees(3).entrySet()) {
             System.out.println(entrySet.getKey().toShortString() + " Reduce hierarchy by: "+ entrySet.getValue());
         }
-        System.out.println("Testing for CSBS Students Again");
+        System.out.println("Testing for CSBS Students");
     }
 }
