@@ -21,7 +21,7 @@ pipeline {
             }
         }
 
-        stage('Run Container (Optional)') {
+        stage('Run Container') {
             steps {
                 script {
                     bat "docker run ${DOCKER_IMAGE}:${BUILD_NUMBER}"
