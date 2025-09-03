@@ -1,27 +1,41 @@
 pipeline {
     agent any
 
+    environment {
+        // Uncomment below if pushing to DockerHub
+        // DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+        DOCKER_IMAGE = "bigcompanyorgstruct"
+    }
+
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/somanadha/BigCompanyOrgStruct.git'
+            }
+        }
+
         stage('Build') {
             steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/somanadha/BigCompanyOrgStruct'
-
-                // Run Maven on a Unix agent.
-                // sh "mvn -Dmaven.test.failure.ignore=true clean package"
-
-                // To run Maven on a Windows agent, use
-                bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                // Build docker image using Dockerfile
+                bat "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} -f Dockerfile ."
             }
+        }
 
-            post {
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
+        stage('Run Container (Optional)') {
+            steps {
+                script {
+                    bat "docker run ${DOCKER_IMAGE}:${BUILD_NUMBER}"
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Checkout, Build, Dockerize & Deploy completed successfully!"
+        }
+        failure {
+            echo "❌ Build failed!"
         }
     }
 }
