@@ -1,12 +1,3 @@
-#FROM openjdk:24-slim-bullseye
-#FROM maven:3.9.9-eclipse-temurin-17
-#COPY pom.xml pom.xml
-#COPY target/bigcompany.jar bigcompany.jar
-#COPY data.csv data.csv
-#RUN mvn dependency:go-offline -B
-#RUN mvn clean package -DskipTests dependency:copy-dependencies
-#ENTRYPOINT ["java", "-jar", "bigcompany.jar"]
-
 # Stage 1: Build the application and resolve dependencies
 FROM maven:3.8.5-openjdk-17-slim AS build
 WORKDIR /app
